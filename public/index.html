@@ -1,0 +1,2914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SoSo-Value</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #6C5CE7;
+    --primary-dark: #5A4BD1;
+    --primary-light: #A29BFE;
+    --secondary: #00CEC9;
+    --accent: #FD79A8;
+    --gold: #FDCB6E;
+    --dark: #0A0A1A;
+    --dark2: #12122A;
+    --dark3: #1A1A3E;
+    --dark4: #222255;
+    --text: #FFFFFF;
+    --text-secondary: #B0B0D0;
+    --success: #00B894;
+    --danger: #FF6B6B;
+    --warning: #FFEAA7;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.loading-screen {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, var(--dark), var(--dark2));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    transition: opacity 0.5s;
+}
+
+.loading-screen.hide {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loading-logo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: bold;
+    animation: pulse-glow 1.5s infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(108,92,231,0.5); transform: scale(1); }
+    50% { box-shadow: 0 0 40px rgba(108,92,231,0.8), 0 0 60px rgba(0,206,201,0.4); transform: scale(1.05); }
+}
+
+.loading-bar {
+    width: 200px;
+    height: 4px;
+    background: var(--dark3);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.loading-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: 2px;
+    animation: loading-anim 1.5s ease-in-out infinite;
+}
+
+@keyframes loading-anim {
+    0% { width: 0; margin-left: 0; }
+    50% { width: 70%; margin-left: 15%; }
+    100% { width: 0; margin-left: 100%; }
+}
+
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--dark) 0%, var(--dark2) 50%, var(--dark3) 100%);
+}
+
+.auth-logo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    box-shadow: 0 0 30px rgba(108,92,231,0.4);
+}
+
+.auth-title {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 5px;
+}
+
+.auth-subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.auth-form {
+    width: 100%;
+    max-width: 400px;
+    background: var(--dark2);
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid rgba(108,92,231,0.2);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    background: var(--dark3);
+    border: 1px solid rgba(108,92,231,0.2);
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 15px;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.form-group input:focus, .form-group select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(108,92,231,0.2);
+}
+
+.form-group input::placeholder {
+    color: rgba(176,176,208,0.5);
+}
+
+.btn {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    box-shadow: 0 4px 15px rgba(108,92,231,0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108,92,231,0.6);
+}
+
+.btn-secondary {
+    background: var(--dark3);
+    color: var(--text);
+    border: 1px solid rgba(108,92,231,0.3);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success), #00A884);
+    color: white;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger), #E55555);
+    color: white;
+}
+
+.btn-gold {
+    background: linear-gradient(135deg, var(--gold), #E5B85C);
+    color: var(--dark);
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.auth-switch a {
+    color: var(--primary-light);
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal {
+    background: var(--dark2);
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 420px;
+    width: 100%;
+    border: 1px solid rgba(108,92,231,0.3);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    transform: scale(0.8);
+    transition: transform 0.3s;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.modal-overlay.active .modal {
+    transform: scale(1);
+}
+
+.modal-glitter {
+    text-align: center;
+    position: relative;
+}
+
+.modal-glitter::before {
+    content: '✨🎉✨';
+    display: block;
+    font-size: 40px;
+    margin-bottom: 15px;
+    animation: glitter-bounce 1s infinite;
+}
+
+@keyframes glitter-bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.modal h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.modal p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.modal .highlight {
+    color: var(--gold);
+    font-weight: 700;
+}
+
+.modal .btn {
+    margin-top: 15px;
+}
+
+.app-container {
+    display: none;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-bottom: 70px;
+}
+
+.app-container.active {
+    display: flex;
+}
+
+.top-bar {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--dark2);
+    border-bottom: 1px solid rgba(108,92,231,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.top-bar-logo {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.top-bar h1 {
+    font-size: 18px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.notification-icon {
+    position: relative;
+    font-size: 20px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.notification-dot {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 8px;
+    height: 8px;
+    background: var(--danger);
+    border-radius: 50%;
+}
+
+.content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.tab-content {
+    display: none;
+    padding: 15px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--dark2);
+    border-top: 1px solid rgba(108,92,231,0.15);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0 12px;
+    z-index: 100;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    padding: 5px 15px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    color: var(--text-secondary);
+    font-size: 11px;
+    text-decoration: none;
+}
+
+.nav-item.active {
+    color: var(--primary-light);
+}
+
+.nav-item i {
+    font-size: 20px;
+}
+
+.nav-item span {
+    font-weight: 500;
+}
+
+.balance-card {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark), var(--secondary));
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.balance-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -30%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+}
+
+.balance-card::after {
+    content: '';
+    position: absolute;
+    bottom: -40%;
+    left: -20%;
+    width: 150px;
+    height: 150px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+}
+
+.balance-label {
+    font-size: 13px;
+    opacity: 0.8;
+    margin-bottom: 5px;
+}
+
+.balance-amount {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.balance-usd {
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.balance-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.balance-actions .btn {
+    flex: 1;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 12px;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: var(--dark2);
+    border-radius: 15px;
+    padding: 18px;
+    border: 1px solid rgba(108,92,231,0.15);
+}
+
+.stat-card .stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.stat-card .stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.stat-card .stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.announcement-banner {
+    background: linear-gradient(135deg, rgba(253,203,110,0.15), rgba(253,121,168,0.15));
+    border: 1px solid rgba(253,203,110,0.3);
+    border-radius: 15px;
+    padding: 18px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.announcement-banner::before {
+    content: '🔥';
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    animation: fire-pulse 1s infinite;
+}
+
+@keyframes fire-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.announcement-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    color: var(--dark);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.announcement-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: var(--gold);
+}
+
+.announcement-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.announcement-price {
+    display: inline-block;
+    background: var(--dark3);
+    padding: 5px 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+    font-weight: 700;
+    color: var(--success);
+    font-size: 14px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-title i {
+    color: var(--primary-light);
+}
+
+.soso-plans-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.soso-plan-card {
+    background: var(--dark2);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid rgba(108,92,231,0.15);
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.soso-plan-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(108,92,231,0.2);
+}
+
+.soso-plan-card.popular::before {
+    content: 'HOT';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--danger);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.plan-level {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary-light);
+    margin-bottom: 8px;
+}
+
+.plan-price {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.plan-price-usd {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.plan-detail {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.plan-detail span:last-child {
+    color: var(--success);
+    font-weight: 600;
+}
+
+.plan-buy-btn {
+    width: 100%;
+    padding: 8px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s;
+}
+
+.plan-buy-btn:hover {
+    box-shadow: 0 3px 12px rgba(108,92,231,0.4);
+}
+
+.invite-card {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.invite-card h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.invite-card p {
+    opacity: 0.85;
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.referral-code-box {
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.referral-code {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.copy-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.invite-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.invite-stat {
+    background: var(--dark2);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid rgba(108,92,231,0.15);
+}
+
+.invite-stat .value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-light);
+}
+
+.invite-stat .label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 5px;
+}
+
+.active-investments {
+    margin-bottom: 20px;
+}
+
+.investment-card {
+    background: var(--dark2);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(108,92,231,0.15);
+    border-left: 4px solid var(--primary);
+}
+
+.investment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.investment-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary-light);
+}
+
+.investment-status {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.investment-status.active {
+    background: rgba(0,184,148,0.15);
+    color: var(--success);
+}
+
+.investment-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.invest-detail-item {
+    font-size: 12px;
+}
+
+.invest-detail-item .detail-label {
+    color: var(--text-secondary);
+}
+
+.invest-detail-item .detail-value {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.countdown-timer {
+    background: var(--dark3);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--secondary);
+}
+
+.countdown-timer .timer-digits {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    font-family: 'Courier New', monospace;
+}
+
+.profile-header {
+    text-align: center;
+    padding: 30px 15px;
+    background: linear-gradient(135deg, var(--dark2), var(--dark3));
+    border-radius: 20px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(108,92,231,0.15);
+}
+
+.profile-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin: 0 auto 12px;
+    box-shadow: 0 0 20px rgba(108,92,231,0.3);
+}
+
+.profile-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.profile-email {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.menu-section {
+    background: var(--dark2);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    border: 1px solid rgba(108,92,231,0.1);
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: background 0.3s;
+    border-bottom: 1px solid rgba(108,92,231,0.05);
+}
+
+.menu-item:last-child {
+    border-bottom: none;
+}
+
+.menu-item:hover {
+    background: var(--dark3);
+}
+
+.menu-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.menu-item-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.menu-item-text {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.menu-item-arrow {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.sub-page {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--dark);
+    z-index: 200;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.sub-page.active {
+    display: flex;
+}
+
+.sub-page-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    background: var(--dark2);
+    border-bottom: 1px solid rgba(108,92,231,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.sub-page-header .back-btn {
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text);
+    background: none;
+    border: none;
+    padding: 5px;
+}
+
+.sub-page-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.sub-page-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.deposit-method-card {
+    background: var(--dark2);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(108,92,231,0.15);
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.deposit-method-card:hover {
+    border-color: var(--primary);
+    background: var(--dark3);
+}
+
+.deposit-method-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.deposit-method-info h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 3px;
+}
+
+.deposit-method-info p {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.amount-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.amount-option {
+    background: var(--dark3);
+    border: 1px solid rgba(108,92,231,0.15);
+    border-radius: 12px;
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.amount-option:hover, .amount-option.selected {
+    border-color: var(--primary);
+    background: rgba(108,92,231,0.1);
+}
+
+.amount-option .amount-local {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.amount-option .amount-usd {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.payment-details {
+    background: var(--dark2);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(108,92,231,0.15);
+    margin-bottom: 20px;
+}
+
+.payment-details h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--primary-light);
+}
+
+.payment-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(108,92,231,0.08);
+}
+
+.payment-info-row:last-child {
+    border-bottom: none;
+}
+
+.payment-info-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.payment-info-value {
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.copy-small {
+    background: var(--dark3);
+    border: none;
+    color: var(--primary-light);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.deposit-countdown {
+    text-align: center;
+    padding: 15px;
+    background: rgba(255,107,107,0.1);
+    border: 1px solid rgba(255,107,107,0.2);
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.deposit-countdown .countdown-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.deposit-countdown .countdown-time {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--danger);
+    font-family: 'Courier New', monospace;
+}
+
+.history-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+.history-tab {
+    padding: 8px 18px;
+    background: var(--dark3);
+    border: 1px solid rgba(108,92,231,0.15);
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s;
+}
+
+.history-tab.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.history-item {
+    background: var(--dark2);
+    border-radius: 14px;
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(108,92,231,0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.history-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.history-info {
+    flex: 1;
+}
+
+.history-type {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 3px;
+}
+
+.history-date {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.history-amount {
+    font-size: 16px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.history-amount.positive {
+    color: var(--success);
+}
+
+.history-amount.negative {
+    color: var(--danger);
+}
+
+.history-amount .usd-small {
+    display: block;
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.bind-section {
+    background: var(--dark2);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(108,92,231,0.15);
+}
+
+.bind-section h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bound-info {
+    background: rgba(0,184,148,0.1);
+    border: 1px solid rgba(0,184,148,0.2);
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.bound-info p {
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+.bound-info .bound-value {
+    font-weight: 600;
+    color: var(--success);
+}
+
+.about-content {
+    line-height: 1.8;
+}
+
+.about-content h3 {
+    font-size: 18px;
+    color: var(--primary-light);
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+.about-content p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+}
+
+.toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: var(--dark2);
+    border: 1px solid rgba(108,92,231,0.3);
+    border-radius: 12px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 99999;
+    transition: transform 0.3s;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    max-width: 90%;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast.success { border-color: rgba(0,184,148,0.5); }
+.toast.error { border-color: rgba(255,107,107,0.5); }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--dark); }
+::-webkit-scrollbar-thumb { background: var(--dark4); border-radius: 4px; }
+
+.empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-state i {
+    font-size: 50px;
+    margin-bottom: 15px;
+    opacity: 0.3;
+}
+
+.empty-state p { font-size: 14px; }
+
+.chain-option {
+    background: var(--dark3);
+    border: 1px solid rgba(108,92,231,0.15);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.chain-option:hover, .chain-option.selected {
+    border-color: var(--primary);
+    background: rgba(108,92,231,0.1);
+}
+
+.success-check {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--success);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    margin: 0 auto 20px;
+    animation: success-pop 0.5s ease;
+}
+
+@keyframes success-pop {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.yield-info-box {
+    background: rgba(0,184,148,0.1);
+    border: 1px solid rgba(0,184,148,0.2);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.yield-info-box h4 { color: var(--success); font-size: 14px; margin-bottom: 8px; }
+.yield-info-box p { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+@media (max-width: 360px) {
+    .soso-plans-grid { grid-template-columns: 1fr; }
+    .amount-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.glitter-text {
+    background: linear-gradient(90deg, var(--gold), var(--accent), var(--gold), var(--secondary), var(--gold));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: glitter-shift 2s linear infinite;
+}
+
+@keyframes glitter-shift {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+.customer-care-float {
+    position: fixed;
+    bottom: 80px;
+    right: 15px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0088cc, #00aced);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,136,204,0.4);
+    z-index: 99;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.customer-care-float:hover { transform: scale(1.1); }
+
+.no-investments-msg {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-secondary);
+}
+
+.usdt-input-section { margin-bottom: 15px; }
+
+.usdt-input-section input {
+    width: 100%;
+    padding: 12px 15px;
+    background: var(--dark3);
+    border: 1px solid rgba(108,92,231,0.2);
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 16px;
+    outline: none;
+}
+
+.min-withdraw-note {
+    background: rgba(253,203,110,0.1);
+    border: 1px solid rgba(253,203,110,0.2);
+    border-radius: 10px;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    font-size: 12px;
+    color: var(--gold);
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loadingScreen">
+    <div class="loading-logo">SV</div>
+    <p style="margin-bottom:15px;color:var(--text-secondary);font-size:14px;">SoSo-Value</p>
+    <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- AUTH: LOGIN -->
+<div class="auth-container" id="loginPage" style="display:none;">
+    <div class="auth-logo">SV</div>
+    <div class="auth-title">SoSo-Value</div>
+    <div class="auth-subtitle">Welcome back! Please login</div>
+    <div class="auth-form">
+        <div class="form-group">
+            <label>Email or Name</label>
+            <input type="text" id="loginEmail" placeholder="Enter email or name">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter password">
+        </div>
+        <button class="btn btn-primary" onclick="handleLogin()">
+            <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+        <div class="auth-switch">
+            Don't have an account? <a onclick="showPage('signupPage')">Sign Up</a>
+        </div>
+    </div>
+</div>
+
+<!-- AUTH: SIGNUP -->
+<div class="auth-container" id="signupPage" style="display:none;">
+    <div class="auth-logo">SV</div>
+    <div class="auth-title">Create Account</div>
+    <div class="auth-subtitle">Join SoSo-Value community</div>
+    <div class="auth-form">
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="signupName" placeholder="Enter your full name">
+            <p style="color: #FDCB6E; font-size: 11px; margin-top: 5px; line-height: 1.4;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Important:</strong> Your signup name MUST be the same as your bank account name. This is required for withdrawals.
+            </p>
+        </div>
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="signupEmail" placeholder="Enter email address">
+        </div>
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="signupPhone" placeholder="Enter phone number">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="signupPassword" placeholder="Create password">
+        </div>
+        <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" id="signupConfirm" placeholder="Confirm password">
+        </div>
+        <div class="form-group">
+            <label>Referral Code (Optional)</label>
+            <input type="text" id="signupReferral" placeholder="Enter referral code">
+        </div>
+        <button class="btn btn-primary" onclick="handleSignup()">
+            <i class="fas fa-user-plus"></i> Sign Up
+        </button>
+        <div class="auth-switch">
+            Already have an account? <a onclick="showPage('loginPage')">Login</a>
+        </div>
+    </div>
+</div>
+
+<!-- WELCOME MODALS -->
+<div class="modal-overlay" id="welcomeModal1">
+    <div class="modal">
+        <div class="modal-glitter">
+            <h2 class="glitter-text">🎉 Welcome to SoSo-Value! 🎉</h2>
+            <p>Congratulations on joining us at this early stage!</p>
+            <p style="color: #FF6B6B; font-size: 13px; background: rgba(255,107,107,0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,107,107,0.3);">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Important Notice:</strong> Your signup name must be the same as your bank account name. If they don't match, withdrawals cannot be processed.
+            </p>
+            <p>You've received a <span class="highlight">Sign-up Bonus of <span id="bonusLocal"></span> ($0.2)</span> for buying SoSo-Value at this early stage!</p>
+            <p style="font-size:13px;">This bonus has been added to your account balance.</p>
+            <button class="btn btn-gold" onclick="closeModal('welcomeModal1'); openModal('welcomeModal2');">
+                <i class="fas fa-arrow-right"></i> Next
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="welcomeModal2">
+    <div class="modal">
+        <div class="modal-glitter">
+            <h2 class="glitter-text">📢 Important Notice</h2>
+            <p>All SoSo-Value bought would be transferred to individual's wallet address provided, <span class="highlight">after the period of four months</span>.</p>
+            <p>Please ensure you bind your wallet address in the <span class="highlight">"Bind Bank"</span> section under the "Me" tab.</p>
+            <button class="btn btn-gold" onclick="closeModal('welcomeModal2'); openModal('welcomeModal3');">
+                <i class="fas fa-arrow-right"></i> Next
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="welcomeModal3">
+    <div class="modal">
+        <div class="modal-glitter">
+            <h2 class="glitter-text">📖 Read About Us</h2>
+            <p>Please read the <span class="highlight">'About'</span> section under the <span class="highlight">'Me'</span> tab to know everything about us.</p>
+            <p>Understanding our mission helps you make informed investment decisions!</p>
+            <button class="btn btn-success" onclick="closeModal('welcomeModal3');">
+                <i class="fas fa-check"></i> Got It! Let's Go
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="app-container" id="appContainer">
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <div class="top-bar-logo">SV</div>
+            <h1>SoSo-Value</h1>
+        </div>
+        <div class="top-bar-right">
+            <div class="notification-icon" onclick="showToast('No new notifications', 'info')">
+                <i class="fas fa-bell"></i>
+                <div class="notification-dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- HOME TAB -->
+        <div class="tab-content active" id="homeTab">
+            <div class="balance-card">
+                <div class="balance-label">Total Balance</div>
+                <div class="balance-amount" id="homeBalance">₦0.00</div>
+                <div class="balance-usd" id="homeBalanceUsd">≈ $0.00</div>
+                <div class="balance-actions">
+                    <button class="btn btn-gold" onclick="openSubPage('depositPage')">
+                        <i class="fas fa-plus"></i> Deposit
+                    </button>
+                    <button class="btn btn-success" onclick="openSubPage('withdrawPage')">
+                        <i class="fas fa-arrow-up"></i> Withdraw
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:rgba(0,184,148,0.15);color:var(--success);"><i class="fas fa-chart-line"></i></div>
+                    <div class="stat-value" id="homeTotalYield">₦0.00</div>
+                    <div class="stat-label">Total Yield (5%/day)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:rgba(253,203,110,0.15);color:var(--gold);"><i class="fas fa-wallet"></i></div>
+                    <div class="stat-value" id="homeWithdrawable">₦0.00</div>
+                    <div class="stat-label">Withdrawable (2%)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:rgba(108,92,231,0.15);color:var(--primary-light);"><i class="fas fa-coins"></i></div>
+                    <div class="stat-value" id="homeTotalInvested">₦0.00</div>
+                    <div class="stat-label">Total Invested</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:rgba(253,121,168,0.15);color:var(--accent);"><i class="fas fa-users"></i></div>
+                    <div class="stat-value" id="homeReferrals">0</div>
+                    <div class="stat-label">Referrals</div>
+                </div>
+            </div>
+
+            <div class="yield-info-box">
+                <h4><i class="fas fa-info-circle"></i> Yield Information</h4>
+                <p>• Daily yield: <strong>5%</strong> of invested amount (every 24 hours)<br>
+                • <strong>2%</strong> of all gathered weekly yields can be withdrawn every <strong>last Friday of the month</strong><br>
+                • Minimum deposit: <strong id="yieldMinDeposit">₦5,000</strong></p>
+            </div>
+
+            <div class="announcement-banner">
+                <div class="announcement-badge">🔥 LIMITED OFFER</div>
+                <div class="announcement-title">SoSo-Value at Reduced Price!</div>
+                <div class="announcement-text">
+                    Buy SoSo-Value cryptocurrency on our platform at a special reduced price of <strong style="color:var(--success);">$0.1 per token!</strong><br>
+                    <span id="announcementEstimate"></span>
+                </div>
+                <div class="announcement-price">
+                    1 SoSo-Value = $0.1 | <span id="announcementLocalPrice"></span>
+                </div>
+            </div>
+
+            <div class="section-title"><i class="fas fa-layer-group"></i> SoSo-Value Plans</div>
+            <div class="soso-plans-grid" id="sosoPlansGrid"></div>
+
+            <div style="background:var(--dark2);border-radius:14px;padding:15px;margin-bottom:20px;border:1px solid rgba(108,92,231,0.15);">
+                <p style="font-size:13px;color:var(--text-secondary);text-align:center;">
+                    <i class="fas fa-info-circle" style="color:var(--primary-light)"></i>
+                    Want to buy more than SoSo-20? You can buy <strong style="color:var(--text);">multiple plans</strong> using the same account. No need for multiple accounts!
+                </p>
+            </div>
+        </div>
+
+        <!-- INVITE TAB -->
+        <div class="tab-content" id="inviteTab">
+            <div class="invite-card">
+                <h2>🎁 Invite Friends & Earn!</h2>
+                <p>Share your referral code and earn <strong id="inviteBonusAmount"></strong> ($0.2) for every friend who signs up!</p>
+                <div class="referral-code-box">
+                    <span class="referral-code" id="myReferralCode">------</span>
+                    <button class="copy-btn" onclick="copyReferral()"><i class="fas fa-copy"></i> Copy</button>
+                </div>
+                <p style="font-size:12px;opacity:0.7;">Referral bonus = Sign-up bonus</p>
+            </div>
+            <div class="invite-stats">
+                <div class="invite-stat">
+                    <div class="value" id="inviteTotalReferrals">0</div>
+                    <div class="label">Total Referrals</div>
+                </div>
+                <div class="invite-stat">
+                    <div class="value" id="inviteTotalEarnings">₦0</div>
+                    <div class="label">Referral Earnings</div>
+                </div>
+            </div>
+            <div style="background:var(--dark2);border-radius:16px;padding:20px;border:1px solid rgba(108,92,231,0.15);">
+                <h3 style="font-size:16px;margin-bottom:12px;"><i class="fas fa-share-alt" style="color:var(--primary-light)"></i> Share Link</h3>
+                <div style="background:var(--dark3);border-radius:10px;padding:12px;word-break:break-all;font-size:13px;color:var(--text-secondary);margin-bottom:12px;" id="shareLink">Loading...</div>
+                <button class="btn btn-primary" onclick="copyShareLink()" style="font-size:14px;">
+                    <i class="fas fa-share"></i> Copy Share Link
+                </button>
+            </div>
+        </div>
+
+        <!-- PRODUCT TAB -->
+        <div class="tab-content" id="productTab">
+            <div class="section-title"><i class="fas fa-shopping-bag"></i> My Active Investments</div>
+            <div id="activeInvestments">
+                <div class="no-investments-msg">
+                    <i class="fas fa-box-open" style="font-size:40px;opacity:0.3;display:block;margin-bottom:10px;"></i>
+                    <p>No active investments yet. Buy a SoSo plan from the Home tab!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ME TAB -->
+        <div class="tab-content" id="meTab">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatarText">U</div>
+                <div class="profile-name" id="profileName">User</div>
+                <div class="profile-email" id="profileEmail">user@email.com</div>
+                <div style="margin-top:10px;font-size:13px;color:var(--text-secondary);">
+                    Balance: <strong id="profileBalance" style="color:var(--success);">₦0.00</strong>
+                </div>
+            </div>
+            <div class="menu-section">
+                <div class="menu-item" onclick="openSubPage('aboutPage')">
+                    <div class="menu-item-left">
+                        <div class="menu-item-icon" style="background:rgba(108,92,231,0.15);color:var(--primary-light);"><i class="fas fa-info-circle"></i></div>
+                        <span class="menu-item-text">About</span>
+                    </div>
+                    <i class="fas fa-chevron-right menu-item-arrow"></i>
+                </div>
+                <div class="menu-item" onclick="openSubPage('withdrawPage')">
+                    <div class="menu-item-left">
+                        <div class="menu-item-icon" style="background:rgba(0,184,148,0.15);color:var(--success);"><i class="fas fa-money-bill-wave"></i></div>
+                        <span class="menu-item-text">Withdraw</span>
+                    </div>
+                    <i class="fas fa-chevron-right menu-item-arrow"></i>
+                </div>
+                <div class="menu-item" onclick="openSubPage('myInvestPage')">
+                    <div class="menu-item-left">
+                        <div class="menu-item-icon" style="background:rgba(253,203,110,0.15);color:var(--gold);"><i class="fas fa-chart-pie"></i></div>
+                        <span class="menu-item-text">My Invest</span>
+                    </div>
+                    <i class="fas fa-chevron-right menu-item-arrow"></i>
+                </div>
+                <div class="menu-item" onclick="openSubPage('historyPage')">
+                    <div class="menu-item-left">
+                        <div class="menu-item-icon" style="background:rgba(253,121,168,0.15);color:var(--accent);"><i class="fas fa-history"></i></div>
+                        <span class="menu-item-text">All History</span>
+                    </div>
+                    <i class="fas fa-chevron-right menu-item-arrow"></i>
+                </div>
+                <div class="menu-item" onclick="openSubPage('bindBankPage')">
+                    <div class="menu-item-left">
+                        <div class="menu-item-icon" style="background:rgba(0,206,201,0.15);color:var(--secondary);"><i class="fas fa-university"></i></div>
+                        <span class="menu-item-text">Bind Bank</span>
+                    </div>
+                    <i class="fas fa-chevron-right menu-item-arrow"></i>
+                </div>
+                <div class="menu-item" onclick="window.open('https://t.me/soso_value_customer_care','_blank')">
+                    <div class="menu-item-left">
+                        <div class="menu-item-icon" style="background:rgba(0,136,204,0.15);color:#0088cc;"><i class="fab fa-telegram"></i></div>
+                        <span class="menu-item-text">Customer Care</span>
+                    </div>
+                    <i class="fas fa-chevron-right menu-item-arrow"></i>
+                </div>
+            </div>
+            <div class="menu-section">
+                <div class="menu-item" onclick="handleLogout()" style="color:var(--danger);">
+                    <div class="menu-item-left">
+                        <div class="menu-item-icon" style="background:rgba(255,107,107,0.15);color:var(--danger);"><i class="fas fa-sign-out-alt"></i></div>
+                        <span class="menu-item-text" style="color:var(--danger);">Logout</span>
+                    </div>
+                    <i class="fas fa-chevron-right menu-item-arrow"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('homeTab', this)"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="switchTab('inviteTab', this)"><i class="fas fa-gift"></i><span>Invite</span></div>
+        <div class="nav-item" onclick="switchTab('productTab', this)"><i class="fas fa-box"></i><span>Product</span></div>
+        <div class="nav-item" onclick="switchTab('meTab', this)"><i class="fas fa-user"></i><span>Me</span></div>
+    </div>
+</div>
+
+<a class="customer-care-float" id="customerCareFloat" href="https://t.me/soso_value_customer_care" target="_blank" style="display:none;">
+    <i class="fab fa-telegram"></i>
+</a>
+
+<!-- ABOUT PAGE -->
+<div class="sub-page" id="aboutPage">
+    <div class="sub-page-header">
+        <button class="back-btn" onclick="closeSubPage('aboutPage')"><i class="fas fa-arrow-left"></i></button>
+        <h2>About Us</h2>
+    </div>
+    <div class="sub-page-content">
+        <div class="about-content">
+            <div style="text-align:center;margin-bottom:25px;">
+                <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));display:inline-flex;align-items:center;justify-content:center;font-size:32px;font-weight:bold;margin-bottom:10px;box-shadow:0 0 30px rgba(108,92,231,0.4);">SV</div>
+                <h2 style="font-size:24px;background:linear-gradient(135deg,var(--primary-light),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SoSo-Value</h2>
+            </div>
+            <h3>🎯 Our Goal</h3>
+            <p>Our goal is to help the SoSoValue cryptocurrency grow by increasing its use and trading activity in the crypto market. We want to build a strong community of users and investors who believe in the future of the project.</p>
+            <h3>📈 Our Vision</h3>
+            <p>As the value and trading volume of SoSoValue increase, we plan to build enough capital to expand into international forex trading and other investment opportunities. The income generated from these activities can help create more value and benefits for people who own the SoSoValue cryptocurrency.</p>
+            <h3>💎 Our Values</h3>
+            <p>We believe in honesty, transparency, and working together as a community. Our aim is to create opportunities for everyone to benefit from the growth of SoSoValue while helping build a stronger financial future for all our supporters.</p>
+            <h3>🤝 Join Us</h3>
+            <p>By supporting SoSoValue, you become part of a growing project that is focused on long-term success and rewarding its community members.</p>
+            <div style="background:var(--dark2);border-radius:14px;padding:20px;margin-top:20px;border:1px solid rgba(108,92,231,0.15);text-align:center;">
+                <p style="font-size:14px;color:var(--gold);margin-bottom:10px;"><strong>💰 Investment Details</strong></p>
+                <p style="font-size:13px;color:var(--text-secondary);">Daily Yield: <strong style="color:var(--success);">5%</strong></p>
+                <p style="font-size:13px;color:var(--text-secondary);">Withdrawal: <strong style="color:var(--success);">2% of weekly yields, last Friday of month</strong></p>
+                <p style="font-size:13px;color:var(--text-secondary);">Min. Deposit: <strong style="color:var(--success);" id="aboutMinDeposit">₦5,000</strong></p>
+                <p style="font-size:13px;color:var(--text-secondary);">SoSo-Value Price: <strong style="color:var(--success);">$0.1</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DEPOSIT PAGE -->
+<div class="sub-page" id="depositPage">
+    <div class="sub-page-header">
+        <button class="back-btn" onclick="closeSubPage('depositPage')"><i class="fas fa-arrow-left"></i></button>
+        <h2>Deposit</h2>
+    </div>
+    <div class="sub-page-content" id="depositContent">
+        <div id="depositStep1">
+            <h3 style="font-size:16px;margin-bottom:15px;color:var(--text-secondary);">Select Deposit Method</h3>
+            <div class="deposit-method-card" onclick="showDepositMethod('bank')">
+                <div class="deposit-method-icon" style="background:rgba(0,184,148,0.15);color:var(--success);"><i class="fas fa-university"></i></div>
+                <div class="deposit-method-info"><h3>Bank Transfer</h3><p>Transfer to our bank account (Nigerian banks)</p></div>
+            </div>
+            <div class="deposit-method-card" onclick="showDepositMethod('usdt')">
+                <div class="deposit-method-icon" style="background:rgba(253,203,110,0.15);color:var(--gold);"><i class="fas fa-coins"></i></div>
+                <div class="deposit-method-info"><h3>USDT (TRC20)</h3><p>Deposit USDT via TRON network</p></div>
+            </div>
+        </div>
+        <div id="depositBankStep" style="display:none;">
+            <h3 style="font-size:16px;margin-bottom:15px;">Select Amount (Bank Transfer)</h3>
+            <div class="amount-grid" id="depositBankAmounts"></div>
+            <button class="btn btn-primary" onclick="proceedBankDeposit()" style="margin-top:10px;"><i class="fas fa-arrow-right"></i> Proceed</button>
+            <button class="btn btn-secondary" onclick="backToDepositMethods()" style="margin-top:10px;"><i class="fas fa-arrow-left"></i> Back</button>
+        </div>
+        <div id="depositBankPayment" style="display:none;">
+            <div class="deposit-countdown">
+                <div class="countdown-label">Session expires in</div>
+                <div class="countdown-time" id="depositCountdown">30:00</div>
+            </div>
+            <div class="payment-details">
+                <h3><i class="fas fa-university"></i> Bank Transfer Details</h3>
+                <div class="payment-info-row"><span class="payment-info-label">Bank</span><span class="payment-info-value">PalmPay <button class="copy-small" onclick="copyText('PalmPay')">Copy</button></span></div>
+                <div class="payment-info-row"><span class="payment-info-label">Account Name</span><span class="payment-info-value">Fahad Abubakar <button class="copy-small" onclick="copyText('Fahad Abubakar')">Copy</button></span></div>
+                <div class="payment-info-row"><span class="payment-info-label">Account Number</span><span class="payment-info-value">8932420429 <button class="copy-small" onclick="copyText('8932420429')">Copy</button></span></div>
+                <div class="payment-info-row"><span class="payment-info-label">Amount</span><span class="payment-info-value" id="depositBankAmountShow" style="color:var(--gold);">₦0</span></div>
+            </div>
+            <p style="font-size:13px;color:var(--text-secondary);text-align:center;margin-bottom:15px;">Transfer the exact amount above. After transferring, click "Confirm Deposit".</p>
+            <button class="btn btn-success" onclick="confirmDeposit('bank')"><i class="fas fa-check-circle"></i> Confirm Deposit</button>
+            <button class="btn btn-secondary" onclick="backToDepositMethods()" style="margin-top:10px;"><i class="fas fa-times"></i> Cancel</button>
+        </div>
+        <div id="depositUsdtStep" style="display:none;">
+            <h3 style="font-size:16px;margin-bottom:15px;">Deposit USDT (TRC20)</h3>
+            <div class="min-withdraw-note"><i class="fas fa-info-circle"></i> Minimum deposit: $4 (USDT)</div>
+            <div class="usdt-input-section">
+                <label style="font-size:13px;color:var(--text-secondary);display:block;margin-bottom:6px;">Enter USDT Amount</label>
+                <input type="number" id="depositUsdtAmount" placeholder="Enter USDT amount (min $4)" min="4" step="0.01">
+                <p style="font-size:12px;color:var(--text-secondary);margin-top:5px;" id="usdtToLocalDeposit"></p>
+            </div>
+            <button class="btn btn-primary" onclick="proceedUsdtDeposit()" style="margin-top:10px;"><i class="fas fa-arrow-right"></i> Proceed</button>
+            <button class="btn btn-secondary" onclick="backToDepositMethods()" style="margin-top:10px;"><i class="fas fa-arrow-left"></i> Back</button>
+        </div>
+        <div id="depositUsdtPayment" style="display:none;">
+            <div class="deposit-countdown">
+                <div class="countdown-label">Session expires in</div>
+                <div class="countdown-time" id="depositUsdtCountdown">30:00</div>
+            </div>
+            <div class="payment-details">
+                <h3><i class="fas fa-coins"></i> USDT Deposit Details</h3>
+                <div class="payment-info-row"><span class="payment-info-label">Network</span><span class="payment-info-value">TRON (TRC20)</span></div>
+                <div class="payment-info-row"><span class="payment-info-label">Wallet Address</span><span class="payment-info-value" style="font-size:11px;word-break:break-all;">TQrVzn9QFPE6CP2mwHyykfYbBgnjotBQRh <button class="copy-small" onclick="copyText('TQrVzn9QFPE6CP2mwHyykfYbBgnjotBQRh')">Copy</button></span></div>
+                <div class="payment-info-row"><span class="payment-info-label">Amount (USDT)</span><span class="payment-info-value" id="depositUsdtAmountShow" style="color:var(--gold);">$0</span></div>
+                <div class="payment-info-row"><span class="payment-info-label">Local Equivalent</span><span class="payment-info-value" id="depositUsdtLocalShow" style="color:var(--text-secondary);">₦0</span></div>
+            </div>
+            <p style="font-size:13px;color:var(--text-secondary);text-align:center;margin-bottom:15px;">Send the exact USDT amount to the address above. After sending, click "Confirm Deposit".</p>
+            <button class="btn btn-success" onclick="confirmDeposit('usdt')"><i class="fas fa-check-circle"></i> Confirm Deposit</button>
+            <button class="btn btn-secondary" onclick="backToDepositMethods()" style="margin-top:10px;"><i class="fas fa-times"></i> Cancel</button>
+        </div>
+        <div id="depositSuccess" style="display:none;text-align:center;padding:50px 20px;">
+            <div class="success-check"><i class="fas fa-check"></i></div>
+            <h2 style="margin-bottom:10px;">Deposit Successful!</h2>
+            <p style="color:var(--text-secondary);margin-bottom:5px;">Amount: <strong id="depositSuccessAmount" style="color:var(--success);"></strong></p>
+            <p style="color:var(--text-secondary);margin-bottom:20px;">Your balance has been updated.</p>
+            <button class="btn btn-primary" onclick="closeSubPage('depositPage'); resetDepositPage();"><i class="fas fa-home"></i> Back to Home</button>
+        </div>
+    </div>
+</div>
+
+<!-- WITHDRAW PAGE -->
+<div class="sub-page" id="withdrawPage">
+    <div class="sub-page-header">
+        <button class="back-btn" onclick="closeSubPage('withdrawPage')"><i class="fas fa-arrow-left"></i></button>
+        <h2>Withdraw</h2>
+    </div>
+    <div class="sub-page-content" id="withdrawContent">
+        <div id="withdrawStep1">
+            <div style="background:var(--dark2);border-radius:14px;padding:15px;margin-bottom:20px;border:1px solid rgba(108,92,231,0.15);">
+                <p style="font-size:13px;color:var(--text-secondary);">Available Balance: <strong id="withdrawAvailBalance" style="color:var(--success);font-size:16px;"></strong><br><span style="font-size:11px;">No withdrawal fee!</span></p>
+            </div>
+            <div class="min-withdraw-note"><i class="fas fa-info-circle"></i> Minimum withdrawal: ₦1,000 (≈ $0.7 USDT). Withdrawal available every last Friday of the month.</div>
+            <h3 style="font-size:16px;margin-bottom:15px;color:var(--text-secondary);">Select Withdrawal Method</h3>
+            <div class="deposit-method-card" onclick="showWithdrawMethod('bank')">
+                <div class="deposit-method-icon" style="background:rgba(0,184,148,0.15);color:var(--success);"><i class="fas fa-university"></i></div>
+                <div class="deposit-method-info"><h3>Bank Transfer</h3><p>Withdraw to Nigerian bank account</p></div>
+            </div>
+            <div class="deposit-method-card" onclick="showWithdrawMethod('usdt')">
+                <div class="deposit-method-icon" style="background:rgba(253,203,110,0.15);color:var(--gold);"><i class="fas fa-coins"></i></div>
+                <div class="deposit-method-info"><h3>USDT (Exchange)</h3><p>Withdraw to crypto exchange (Bybit, etc.)</p></div>
+            </div>
+        </div>
+        <div id="withdrawBankStep" style="display:none;">
+            <h3 style="font-size:16px;margin-bottom:15px;">Withdraw to Bank</h3>
+            <div class="min-withdraw-note"><i class="fas fa-info-circle"></i> Minimum: ₦1,000 | No withdrawal fee</div>
+            <div class="form-group">
+                <label>Select Bank</label>
+                <select id="withdrawBankName">
+                    <option value="">-- Select Bank --</option>
+                    <option value="Access Bank">Access Bank</option>
+                    <option value="Citibank Nigeria">Citibank Nigeria</option>
+                    <option value="Ecobank Nigeria">Ecobank Nigeria</option>
+                    <option value="Fidelity Bank">Fidelity Bank</option>
+                    <option value="First Bank of Nigeria">First Bank of Nigeria</option>
+                    <option value="First City Monument Bank">FCMB</option>
+                    <option value="Globus Bank">Globus Bank</option>
+                    <option value="GTBank">GTBank</option>
+                    <option value="Heritage Bank">Heritage Bank</option>
+                    <option value="Jaiz Bank">Jaiz Bank</option>
+                    <option value="Keystone Bank">Keystone Bank</option>
+                    <option value="Kuda Bank">Kuda Bank</option>
+                    <option value="Lotus Bank">Lotus Bank</option>
+                    <option value="Moniepoint">Moniepoint</option>
+                    <option value="OPay">OPay</option>
+                    <option value="PalmPay">PalmPay</option>
+                    <option value="Polaris Bank">Polaris Bank</option>
+                    <option value="Providus Bank">Providus Bank</option>
+                    <option value="Stanbic IBTC Bank">Stanbic IBTC Bank</option>
+                    <option value="Standard Chartered">Standard Chartered</option>
+                    <option value="Sterling Bank">Sterling Bank</option>
+                    <option value="SunTrust Bank">SunTrust Bank</option>
+                    <option value="TAJ Bank">TAJ Bank</option>
+                    <option value="Titan Trust Bank">Titan Trust Bank</option>
+                    <option value="Union Bank">Union Bank</option>
+                    <option value="UBA">UBA</option>
+                    <option value="Unity Bank">Unity Bank</option>
+                    <option value="VFD Microfinance Bank">VFD Microfinance Bank</option>
+                    <option value="Wema Bank">Wema Bank</option>
+                    <option value="Zenith Bank">Zenith Bank</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Account Number</label>
+                <input type="text" id="withdrawAcctNum" placeholder="Enter 10-digit account number" maxlength="10">
+            </div>
+            <div class="form-group">
+                <label>Account Name</label>
+                <input type="text" id="withdrawAcctName" placeholder="Account name will appear here" readonly style="color:var(--success);">
+            </div>
+            <h4 style="font-size:14px;margin:15px 0 10px;color:var(--text-secondary);">Select Withdrawal Amount</h4>
+            <div class="amount-grid" id="withdrawBankAmounts"></div>
+            <button class="btn btn-success" onclick="processWithdrawal('bank')"><i class="fas fa-paper-plane"></i> Withdraw</button>
+            <button class="btn btn-secondary" onclick="backToWithdrawMethods()" style="margin-top:10px;"><i class="fas fa-arrow-left"></i> Back</button>
+        </div>
+        <div id="withdrawUsdtStep" style="display:none;">
+            <h3 style="font-size:16px;margin-bottom:15px;">Withdraw USDT</h3>
+            <div class="min-withdraw-note"><i class="fas fa-info-circle"></i> Minimum: $0.7 USDT | No withdrawal fee</div>
+            <div class="form-group">
+                <label>Select Chain</label>
+                <div class="chain-option selected" onclick="selectChain(this, 'TRC20')">
+                    <i class="fas fa-link" style="color:var(--secondary);"></i>
+                    <div><strong>USDT TRC20</strong><p style="font-size:11px;color:var(--text-secondary);">TRON Network</p></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Wallet Address</label>
+                <input type="text" id="withdrawWalletAddr" placeholder="Enter USDT TRC20 wallet address">
+            </div>
+            <div class="form-group">
+                <label>Amount (USDT)</label>
+                <input type="number" id="withdrawUsdtAmount" placeholder="Enter USDT amount (min $0.7)" min="0.7" step="0.01">
+                <p style="font-size:12px;color:var(--text-secondary);margin-top:5px;" id="usdtToLocalWithdraw"></p>
+            </div>
+            <button class="btn btn-success" onclick="processWithdrawal('usdt')"><i class="fas fa-paper-plane"></i> Withdraw</button>
+            <button class="btn btn-secondary" onclick="backToWithdrawMethods()" style="margin-top:10px;"><i class="fas fa-arrow-left"></i> Back</button>
+        </div>
+        <div id="withdrawSuccess" style="display:none;text-align:center;padding:50px 20px;">
+            <div class="success-check"><i class="fas fa-check"></i></div>
+            <h2 style="margin-bottom:10px;">Withdrawal Successful!</h2>
+            <p style="color:var(--text-secondary);margin-bottom:5px;" id="withdrawSuccessDetails"></p>
+            <p style="color:var(--text-secondary);margin-bottom:20px;">Your balance has been updated.</p>
+            <button class="btn btn-primary" onclick="closeSubPage('withdrawPage'); resetWithdrawPage();"><i class="fas fa-home"></i> Back to Home</button>
+        </div>
+    </div>
+</div>
+
+<!-- MY INVEST PAGE -->
+<div class="sub-page" id="myInvestPage">
+    <div class="sub-page-header">
+        <button class="back-btn" onclick="closeSubPage('myInvestPage')"><i class="fas fa-arrow-left"></i></button>
+        <h2>My Invest</h2>
+    </div>
+    <div class="sub-page-content" id="myInvestContent"></div>
+</div>
+
+<!-- HISTORY PAGE -->
+<div class="sub-page" id="historyPage">
+    <div class="sub-page-header">
+        <button class="back-btn" onclick="closeSubPage('historyPage')"><i class="fas fa-arrow-left"></i></button>
+        <h2>All History</h2>
+    </div>
+    <div class="sub-page-content">
+        <div class="history-tabs">
+            <div class="history-tab active" onclick="filterHistory('all', this)">All</div>
+            <div class="history-tab" onclick="filterHistory('deposit', this)">Deposits</div>
+            <div class="history-tab" onclick="filterHistory('withdrawal', this)">Withdrawals</div>
+            <div class="history-tab" onclick="filterHistory('yield', this)">Yields</div>
+            <div class="history-tab" onclick="filterHistory('bonus', this)">Bonuses</div>
+            <div class="history-tab" onclick="filterHistory('purchase', this)">Purchases</div>
+        </div>
+        <div id="historyList">
+            <div class="empty-state"><i class="fas fa-receipt"></i><p>No transactions yet</p></div>
+        </div>
+    </div>
+</div>
+
+<!-- BIND BANK PAGE -->
+<div class="sub-page" id="bindBankPage">
+    <div class="sub-page-header">
+        <button class="back-btn" onclick="closeSubPage('bindBankPage')"><i class="fas fa-arrow-left"></i></button>
+        <h2>Bind Bank / Wallet</h2>
+    </div>
+    <div class="sub-page-content">
+        <div class="bind-section">
+            <h3><i class="fas fa-university" style="color:var(--success);"></i> Bind Nigerian Bank</h3>
+            <div class="form-group">
+                <label>Select Bank</label>
+                <select id="bindBankSelect">
+                    <option value="">-- Select Bank --</option>
+                    <option value="Access Bank">Access Bank</option>
+                    <option value="Citibank Nigeria">Citibank Nigeria</option>
+                    <option value="Ecobank Nigeria">Ecobank Nigeria</option>
+                    <option value="Fidelity Bank">Fidelity Bank</option>
+                    <option value="First Bank of Nigeria">First Bank of Nigeria</option>
+                    <option value="First City Monument Bank">FCMB</option>
+                    <option value="Globus Bank">Globus Bank</option>
+                    <option value="GTBank">GTBank</option>
+                    <option value="Heritage Bank">Heritage Bank</option>
+                    <option value="Jaiz Bank">Jaiz Bank</option>
+                    <option value="Keystone Bank">Keystone Bank</option>
+                    <option value="Kuda Bank">Kuda Bank</option>
+                    <option value="Lotus Bank">Lotus Bank</option>
+                    <option value="Moniepoint">Moniepoint</option>
+                    <option value="OPay">OPay</option>
+                    <option value="PalmPay">PalmPay</option>
+                    <option value="Polaris Bank">Polaris Bank</option>
+                    <option value="Providus Bank">Providus Bank</option>
+                    <option value="Stanbic IBTC Bank">Stanbic IBTC Bank</option>
+                    <option value="Standard Chartered">Standard Chartered</option>
+                    <option value="Sterling Bank">Sterling Bank</option>
+                    <option value="SunTrust Bank">SunTrust Bank</option>
+                    <option value="TAJ Bank">TAJ Bank</option>
+                    <option value="Titan Trust Bank">Titan Trust Bank</option>
+                    <option value="Union Bank">Union Bank</option>
+                    <option value="UBA">UBA</option>
+                    <option value="Unity Bank">Unity Bank</option>
+                    <option value="VFD Microfinance Bank">VFD Microfinance Bank</option>
+                    <option value="Wema Bank">Wema Bank</option>
+                    <option value="Zenith Bank">Zenith Bank</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Account Number</label>
+                <input type="text" id="bindAcctNumber" placeholder="Enter 10-digit account number" maxlength="10">
+            </div>
+            <div class="form-group">
+                <label>Account Name</label>
+                <input type="text" id="bindAcctName" placeholder="Account name will appear" readonly style="color:var(--success);">
+            </div>
+            <button class="btn btn-primary" onclick="saveBindBank()"><i class="fas fa-save"></i> Save Bank Details</button>
+            <div id="boundBankInfo" style="display:none;">
+                <div class="bound-info" style="margin-top:15px;">
+                    <p>✅ Bank: <span class="bound-value" id="boundBankName"></span></p>
+                    <p>✅ Account: <span class="bound-value" id="boundAcctNum"></span></p>
+                    <p>✅ Name: <span class="bound-value" id="boundAcctName"></span></p>
+                </div>
+            </div>
+        </div>
+        <div class="bind-section">
+            <h3><i class="fas fa-wallet" style="color:var(--gold);"></i> Bind Crypto Wallet</h3>
+            <div class="form-group">
+                <label>USDT TRC20 Wallet Address</label>
+                <input type="text" id="bindWalletAddress" placeholder="Enter your USDT TRC20 address">
+            </div>
+            <button class="btn btn-primary" onclick="saveBindWallet()"><i class="fas fa-save"></i> Save Wallet Address</button>
+            <div id="boundWalletInfo" style="display:none;">
+                <div class="bound-info" style="margin-top:15px;">
+                    <p>✅ USDT TRC20: <span class="bound-value" id="boundWalletAddr" style="font-size:12px;word-break:break-all;"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ==================== CONFIGURATION ====================
+var API_URL = 'https://soso-value.onrender.com/api'; // CHANGE THIS TO YOUR RENDER URL
+var SOSO_PRICE_USD = 0.1;
+var SIGNUP_BONUS_USD = 0.2;
+var DAILY_YIELD_RATE = 0.05;
+var WEEKLY_WITHDRAW_RATE = 0.02;
+var MIN_DEPOSIT_NGN = 5000;
+var MIN_WITHDRAW_NGN = 1000;
+var MIN_WITHDRAW_USDT = 0.7;
+var MIN_DEPOSIT_USDT = 4;
+
+// ==================== STATE ====================
+var currentUser = null;
+var currentToken = null;
+var userTransactions = [];
+var userCurrency = { code: 'NGN', symbol: '₦', rate: 1 };
+var selectedDepositAmount = 0;
+var selectedWithdrawAmount = 0;
+var depositCountdownInterval = null;
+var investmentTimers = [];
+
+// ==================== API HELPER ====================
+async function apiCall(endpoint, method, body) {
+    method = method || 'GET';
+    body = body || null;
+    try {
+        var options = {
+            method: method,
+            headers: { 'Content-Type': 'application/json' }
+        };
+        if (currentToken) {
+            options.headers['Authorization'] = currentToken;
+        }
+        if (body) {
+            options.body = JSON.stringify(body);
+        }
+        var response = await fetch(API_URL + endpoint, options);
+        var data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Something went wrong');
+        }
+        return data;
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+    }
+}
+
+// ==================== CURRENCY DETECTION ====================
+async function detectCurrency() {
+    try {
+        var resp = await fetch('https://ipapi.co/json/');
+        var data = await resp.json();
+        var cc = data.currency || 'NGN';
+        var sym = getCurrencySymbol(cc);
+        if (cc === 'NGN') {
+            userCurrency = { code: 'NGN', symbol: '₦', rate: 1 };
+        } else if (cc === 'USD') {
+            userCurrency = { code: 'USD', symbol: '$', rate: 1/1600 };
+        } else {
+            try {
+                var rateResp = await fetch('https://api.exchangerate-api.com/v4/latest/NGN');
+                var rateData = await rateResp.json();
+                var rate = rateData.rates[cc] || 1;
+                userCurrency = { code: cc, symbol: sym, rate: rate };
+            } catch(e) {
+                userCurrency = { code: 'NGN', symbol: '₦', rate: 1 };
+            }
+        }
+    } catch(e) {
+        userCurrency = { code: 'NGN', symbol: '₦', rate: 1 };
+    }
+}
+
+function getCurrencySymbol(code) {
+    var symbols = {
+        'NGN':'₦','USD':'$','EUR':'€','GBP':'£','GHS':'GH₵','KES':'KSh',
+        'ZAR':'R','INR':'₹','CNY':'¥','JPY':'¥','AED':'د.إ','CAD':'CA$',
+        'AUD':'A$','BRL':'R$','EGP':'E£','XOF':'CFA','XAF':'FCFA','TZS':'TSh',
+        'UGX':'USh','RWF':'RF','ETB':'Br','MAD':'MAD','TND':'DT','PKR':'₨',
+        'BDT':'৳','MYR':'RM','PHP':'₱','THB':'฿','VND':'₫','IDR':'Rp',
+        'KRW':'₩','SGD':'S$','HKD':'HK$','TWD':'NT$','SEK':'kr','NOK':'kr',
+        'DKK':'kr','PLN':'zł','CZK':'Kč','HUF':'Ft','RON':'lei','BGN':'лв',
+        'HRK':'kn','RSD':'din','UAH':'₴','TRY':'₺','ILS':'₪','SAR':'﷼',
+        'QAR':'﷼','BHD':'BD','KWD':'KD','OMR':'﷼','JOD':'JD','LBP':'L£'
+    };
+    return symbols[code] || code + ' ';
+}
+
+function formatLocal(ngnAmount) {
+    var converted = ngnAmount * userCurrency.rate;
+    return userCurrency.symbol + numberWithCommas(converted.toFixed(2));
+}
+
+function formatUSD(ngnAmount) {
+    var usd = ngnAmount / 1600;
+    return '$' + numberWithCommas(usd.toFixed(2));
+}
+
+function ngnFromUsd(usdAmount) {
+    return usdAmount * 1600;
+}
+
+function numberWithCommas(x) {
+    var parts = x.toString().split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return parts.join('.');
+}
+
+// ==================== SOSO PLANS ====================
+function getSosoPlans() {
+    var plans = [];
+    for (var i = 1; i <= 20; i++) {
+        var priceNGN = i * 5000;
+        var priceUSD = i * 4;
+        var dailyIncome = priceNGN * DAILY_YIELD_RATE;
+        plans.push({
+            level: i, name: 'SoSo-' + i, priceNGN: priceNGN, priceUSD: priceUSD,
+            dailyRate: '5%', dailyIncome: dailyIncome, dailyIncomeUSD: dailyIncome / 1600,
+            sosoTokens: priceUSD / SOSO_PRICE_USD
+        });
+    }
+    return plans;
+}
+
+// ==================== UI HELPERS ====================
+function showPage(pageId) {
+    ['loginPage','signupPage'].forEach(function(id) {
+        document.getElementById(id).style.display = id === pageId ? 'flex' : 'none';
+    });
+}
+
+function showToast(message, type) {
+    type = type || 'info';
+    var toast = document.getElementById('toast');
+    var icons = { success: 'check-circle', error: 'exclamation-circle', info: 'info-circle' };
+    var colors = { success: 'var(--success)', error: 'var(--danger)', info: 'var(--primary-light)' };
+    toast.innerHTML = '<i class="fas fa-' + (icons[type] || icons.info) + '" style="color:' + (colors[type]) + ';font-size:18px;"></i><span style="font-size:14px;">' + message + '</span>';
+    toast.className = 'toast show ' + type;
+    setTimeout(function() { toast.className = 'toast'; }, 3000);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+function switchTab(tabId, navEl) {
+    document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+    document.getElementById(tabId).classList.add('active');
+    if (navEl) navEl.classList.add('active');
+    if (tabId === 'productTab') renderActiveInvestments();
+    if (tabId === 'meTab') updateProfileUI();
+    if (tabId === 'homeTab') updateDashboard();
+}
+
+function openSubPage(id) {
+    document.getElementById(id).classList.add('active');
+    if (id === 'historyPage') loadTransactions('all');
+    if (id === 'myInvestPage') renderMyInvest();
+    if (id === 'withdrawPage') { resetWithdrawPage(); document.getElementById('withdrawAvailBalance').textContent = formatLocal(currentUser.balance); }
+    if (id === 'bindBankPage') loadBoundInfo();
+    if (id === 'depositPage') resetDepositPage();
+}
+
+function closeSubPage(id) {
+    document.getElementById(id).classList.remove('active');
+    if (id === 'depositPage') clearDepositCountdown();
+}
+
+// ==================== AUTH: SIGNUP ====================
+async function handleSignup() {
+    var name = document.getElementById('signupName').value.trim();
+    var email = document.getElementById('signupEmail').value.trim();
+    var phone = document.getElementById('signupPhone').value.trim();
+    var pass = document.getElementById('signupPassword').value;
+    var confirm = document.getElementById('signupConfirm').value;
+    var referral = document.getElementById('signupReferral').value.trim();
+
+    if (!name || !email || !phone || !pass) { showToast('Please fill all required fields', 'error'); return; }
+    if (pass !== confirm) { showToast('Passwords do not match', 'error'); return; }
+    if (pass.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
+
+    try {
+        showToast('Creating account...', 'info');
+        await apiCall('/signup', 'POST', { name: name, email: email, phone: phone, password: pass, referralCode: referral });
+        showToast('Account created successfully! Please login.', 'success');
+        document.getElementById('signupName').value = '';
+        document.getElementById('signupEmail').value = '';
+        document.getElementById('signupPhone').value = '';
+        document.getElementById('signupPassword').value = '';
+        document.getElementById('signupConfirm').value = '';
+        document.getElementById('signupReferral').value = '';
+        showPage('loginPage');
+    } catch (error) {
+        showToast(error.message || 'Signup failed', 'error');
+    }
+}
+
+// ==================== AUTH: LOGIN ====================
+async function handleLogin() {
+    var identifier = document.getElementById('loginEmail').value.trim();
+    var pass = document.getElementById('loginPassword').value;
+    if (!identifier || !pass) { showToast('Please fill all fields', 'error'); return; }
+
+    try {
+        showToast('Logging in...', 'info');
+        var data = await apiCall('/login', 'POST', { identifier: identifier, password: pass });
+        currentUser = data.user;
+        currentToken = data.user.token;
+        userTransactions = data.transactions || [];
+        localStorage.setItem('soso_token', currentToken);
+        localStorage.setItem('soso_user_email', currentUser.email);
+        enterApp();
+    } catch (error) {
+        showToast(error.message || 'Login failed', 'error');
+    }
+}
+
+// ==================== ENTER APP ====================
+function enterApp() {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('signupPage').style.display = 'none';
+    document.getElementById('appContainer').classList.add('active');
+    document.getElementById('customerCareFloat').style.display = 'flex';
+
+    updateDashboard();
+    updateProfileUI();
+    renderSosoPlans();
+
+    if (!currentUser.welcomeShown) {
+        setTimeout(function() { openModal('welcomeModal1'); }, 500);
+        currentUser.welcomeShown = true;
+        apiCall('/update-welcome', 'POST', { shown: true }).catch(function(){});
+    }
+
+    var bonusLocal = formatLocal(ngnFromUsd(SIGNUP_BONUS_USD));
+    document.getElementById('bonusLocal').textContent = bonusLocal;
+    document.getElementById('inviteBonusAmount').textContent = bonusLocal;
+
+    setInterval(async function() {
+        try {
+            var data = await apiCall('/profile');
+            currentUser = data.user;
+            userTransactions = data.transactions || [];
+            updateDashboard();
+        } catch(e) {}
+    }, 60000);
+}
+
+// ==================== AUTO LOGIN ====================
+async function tryAutoLogin() {
+    var savedToken = localStorage.getItem('soso_token');
+    if (!savedToken) return false;
+    try {
+        currentToken = savedToken;
+        var data = await apiCall('/profile');
+        currentUser = data.user;
+        userTransactions = data.transactions || [];
+        return true;
+    } catch(e) {
+        localStorage.removeItem('soso_token');
+        localStorage.removeItem('soso_user_email');
+        currentToken = null;
+        return false;
+    }
+}
+
+// ==================== LOGOUT ====================
+function handleLogout() {
+    localStorage.removeItem('soso_token');
+    localStorage.removeItem('soso_user_email');
+    currentUser = null;
+    currentToken = null;
+    userTransactions = [];
+    document.getElementById('appContainer').classList.remove('active');
+    document.getElementById('customerCareFloat').style.display = 'none';
+    clearInvestmentTimers();
+    showPage('loginPage');
+    showToast('Logged out successfully', 'info');
+}
+
+// ==================== DASHBOARD ====================
+function updateDashboard() {
+    if (!currentUser) return;
+    document.getElementById('homeBalance').textContent = formatLocal(currentUser.balance);
+    document.getElementById('homeBalanceUsd').textContent = '≈ ' + formatUSD(currentUser.balance);
+    document.getElementById('homeTotalYield').textContent = formatLocal(currentUser.totalYield);
+    document.getElementById('homeWithdrawable').textContent = formatLocal(currentUser.totalYield * WEEKLY_WITHDRAW_RATE);
+    document.getElementById('homeTotalInvested').textContent = formatLocal(currentUser.totalInvested);
+    document.getElementById('homeReferrals').textContent = currentUser.referralCount;
+
+    var localPerToken = formatLocal(ngnFromUsd(SOSO_PRICE_USD));
+    document.getElementById('announcementLocalPrice').textContent = localPerToken;
+    var minTokens = MIN_DEPOSIT_NGN / ngnFromUsd(SOSO_PRICE_USD);
+    document.getElementById('announcementEstimate').textContent =
+        'With minimum deposit of ' + formatLocal(MIN_DEPOSIT_NGN) + ' (' + formatUSD(MIN_DEPOSIT_NGN) + '), you get approximately ' + minTokens.toFixed(0) + ' SoSo-Value tokens!';
+    document.getElementById('yieldMinDeposit').textContent = formatLocal(MIN_DEPOSIT_NGN);
+    document.getElementById('aboutMinDeposit').textContent = formatLocal(MIN_DEPOSIT_NGN);
+}
+
+function updateProfileUI() {
+    if (!currentUser) return;
+    document.getElementById('profileName').textContent = currentUser.name;
+    document.getElementById('profileEmail').textContent = currentUser.email;
+    document.getElementById('profileBalance').textContent = formatLocal(currentUser.balance);
+    document.getElementById('profileAvatarText').textContent = currentUser.name.charAt(0).toUpperCase();
+    document.getElementById('myReferralCode').textContent = currentUser.referralCode;
+    document.getElementById('inviteTotalReferrals').textContent = currentUser.referralCount;
+    document.getElementById('inviteTotalEarnings').textContent = formatLocal(currentUser.referralEarnings);
+    document.getElementById('shareLink').textContent = window.location.origin + '?ref=' + currentUser.referralCode;
+}
+
+// ==================== RENDER SOSO PLANS ====================
+function renderSosoPlans() {
+    var plans = getSosoPlans();
+    var grid = document.getElementById('sosoPlansGrid');
+    grid.innerHTML = '';
+    plans.forEach(function(plan, idx) {
+        var popular = idx === 0 || idx === 4 || idx === 9;
+        var card = document.createElement('div');
+        card.className = 'soso-plan-card' + (popular ? ' popular' : '');
+        card.innerHTML =
+            '<div class="plan-level">' + plan.name + '</div>' +
+            '<div class="plan-price">' + formatLocal(plan.priceNGN) + '</div>' +
+            '<div class="plan-price-usd">$' + plan.priceUSD + '</div>' +
+            '<div class="plan-detail"><span>Daily Rate</span><span>' + plan.dailyRate + '</span></div>' +
+            '<div class="plan-detail"><span>Daily Income</span><span>' + formatLocal(plan.dailyIncome) + '</span></div>' +
+            '<div class="plan-detail"><span>SoSo Tokens</span><span>' + plan.sosoTokens.toFixed(0) + '</span></div>' +
+            '<button class="plan-buy-btn" onclick="buyPlan(' + plan.level + ')"><i class="fas fa-shopping-cart"></i> Buy ' + plan.name + '</button>';
+        grid.appendChild(card);
+    });
+}
+
+// ==================== BUY PLAN ====================
+async function buyPlan(level) {
+    var plans = getSosoPlans();
+    var plan = plans.find(function(p) { return p.level === level; });
+    if (!plan) { showToast('Plan not found', 'error'); return; }
+
+    if (currentUser.balance < plan.priceNGN) {
+        showToast('Insufficient balance. You need ' + formatLocal(plan.priceNGN) + ' to buy ' + plan.name + '. Please deposit first.', 'error');
+        setTimeout(function() { openSubPage('depositPage'); }, 2000);
+        return;
+    }
+
+    var confirmBuy = confirm(
+        'Buy ' + plan.name + '?\n\n' +
+        'Price: ' + formatLocal(plan.priceNGN) + ' (' + formatUSD(plan.priceNGN) + ')\n' +
+        'Daily Income: ' + formatLocal(plan.dailyIncome) + ' per day\n' +
+        'SoSo Tokens: ' + plan.sosoTokens.toFixed(0) + ' tokens\n\n' +
+        'Balance after purchase: ' + formatLocal(currentUser.balance - plan.priceNGN) + '\n\n' +
+        'Click OK to confirm.'
+    );
+
+    if (!confirmBuy) return;
+
+    showToast('Processing purchase...', 'info');
+
+    try {
+        var data = await apiCall('/buy-plan', 'POST', { level: plan.level, priceNGN: plan.priceNGN });
+
+        currentUser.balance = data.newBalance;
+        currentUser.totalInvested = (currentUser.totalInvested || 0) + plan.priceNGN;
+        if (!currentUser.investments) { currentUser.investments = []; }
+        currentUser.investments.push(data.investment);
+
+        updateDashboard();
+        updateProfileUI();
+
+        var overlay = document.createElement('div');
+        overlay.className = 'modal-overlay active';
+        overlay.id = 'buySuccessModal';
+        overlay.innerHTML =
+            '<div class="modal"><div style="text-align:center;">' +
+            '<div class="success-check"><i class="fas fa-check"></i></div>' +
+            '<h2 style="margin-bottom:10px;color:var(--success);">Purchase Successful!</h2>' +
+            '<p style="color:var(--text-secondary);margin-bottom:8px;">You have successfully bought:</p>' +
+            '<p style="font-size:22px;font-weight:bold;color:var(--primary-light);margin-bottom:5px;">' + plan.name + '</p>' +
+            '<p style="color:var(--text-secondary);font-size:14px;margin-bottom:5px;">Price: <strong style="color:var(--gold);">' + formatLocal(plan.priceNGN) + '</strong></p>' +
+            '<p style="color:var(--text-secondary);font-size:14px;margin-bottom:5px;">Daily Income: <strong style="color:var(--success);">' + formatLocal(plan.dailyIncome) + '</strong></p>' +
+            '<p style="color:var(--text-secondary);font-size:14px;margin-bottom:15px;">New Balance: <strong style="color:var(--success);">' + formatLocal(currentUser.balance) + '</strong></p>' +
+            '<div style="display:flex;gap:10px;">' +
+            '<button class="btn btn-primary" onclick="document.getElementById(\'buySuccessModal\').remove();switchTab(\'productTab\',document.querySelectorAll(\'.nav-item\')[2]);" style="flex:1;"><i class="fas fa-box"></i> View Product</button>' +
+            '<button class="btn btn-secondary" onclick="document.getElementById(\'buySuccessModal\').remove();" style="flex:1;"><i class="fas fa-home"></i> Stay Home</button>' +
+            '</div></div></div>';
+        document.body.appendChild(overlay);
+
+    } catch (error) {
+        showToast(error.message || 'Purchase failed', 'error');
+    }
+}
+
+// ==================== DEPOSIT ====================
+function resetDepositPage() {
+    document.getElementById('depositStep1').style.display = 'block';
+    document.getElementById('depositBankStep').style.display = 'none';
+    document.getElementById('depositBankPayment').style.display = 'none';
+    document.getElementById('depositUsdtStep').style.display = 'none';
+    document.getElementById('depositUsdtPayment').style.display = 'none';
+    document.getElementById('depositSuccess').style.display = 'none';
+    selectedDepositAmount = 0;
+    clearDepositCountdown();
+}
+
+function backToDepositMethods() { resetDepositPage(); }
+
+function showDepositMethod(method) {
+    document.getElementById('depositStep1').style.display = 'none';
+    if (method === 'bank') {
+        document.getElementById('depositBankStep').style.display = 'block';
+        renderDepositBankAmounts();
+    } else {
+        document.getElementById('depositUsdtStep').style.display = 'block';
+        document.getElementById('depositUsdtAmount').oninput = function() {
+            var val = parseFloat(this.value) || 0;
+            document.getElementById('usdtToLocalDeposit').textContent = '≈ ' + formatLocal(ngnFromUsd(val));
+        };
+    }
+}
+
+function renderDepositBankAmounts() {
+    var grid = document.getElementById('depositBankAmounts');
+    grid.innerHTML = '';
+    getSosoPlans().forEach(function(plan) {
+        var opt = document.createElement('div');
+        opt.className = 'amount-option';
+        opt.innerHTML = '<div class="amount-local">' + formatLocal(plan.priceNGN) + '</div><div class="amount-usd">' + formatUSD(plan.priceNGN) + '</div><div style="font-size:10px;color:var(--primary-light);margin-top:3px;">' + plan.name + '</div>';
+        opt.onclick = function() {
+            document.querySelectorAll('#depositBankAmounts .amount-option').forEach(function(a) { a.classList.remove('selected'); });
+            this.classList.add('selected');
+            selectedDepositAmount = plan.priceNGN;
+        };
+        grid.appendChild(opt);
+    });
+}
+
+function proceedBankDeposit() {
+    if (!selectedDepositAmount) { showToast('Please select an amount', 'error'); return; }
+    document.getElementById('depositBankStep').style.display = 'none';
+    document.getElementById('depositBankPayment').style.display = 'block';
+    document.getElementById('depositBankAmountShow').textContent = formatLocal(selectedDepositAmount) + ' (' + formatUSD(selectedDepositAmount) + ')';
+    startDepositCountdown('depositCountdown');
+}
+
+function proceedUsdtDeposit() {
+    var amount = parseFloat(document.getElementById('depositUsdtAmount').value);
+    if (!amount || amount < MIN_DEPOSIT_USDT) { showToast('Minimum USDT deposit is $' + MIN_DEPOSIT_USDT, 'error'); return; }
+    selectedDepositAmount = ngnFromUsd(amount);
+    document.getElementById('depositUsdtStep').style.display = 'none';
+    document.getElementById('depositUsdtPayment').style.display = 'block';
+    document.getElementById('depositUsdtAmountShow').textContent = '$' + amount.toFixed(2) + ' USDT';
+    document.getElementById('depositUsdtLocalShow').textContent = formatLocal(selectedDepositAmount);
+    startDepositCountdown('depositUsdtCountdown');
+}
+
+function startDepositCountdown(elementId) {
+    clearDepositCountdown();
+    var seconds = 30 * 60;
+    var el = document.getElementById(elementId);
+    depositCountdownInterval = setInterval(function() {
+        seconds--;
+        if (seconds <= 0) { clearDepositCountdown(); showToast('Deposit session expired!', 'error'); resetDepositPage(); return; }
+        var m = Math.floor(seconds / 60);
+        var s = seconds % 60;
+        el.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    }, 1000);
+}
+
+function clearDepositCountdown() {
+    if (depositCountdownInterval) { clearInterval(depositCountdownInterval); depositCountdownInterval = null; }
+}
+
+async function confirmDeposit(method) {
+    if (!selectedDepositAmount) return;
+    clearDepositCountdown();
+    document.getElementById('depositBankPayment').style.display = 'none';
+    document.getElementById('depositUsdtPayment').style.display = 'none';
+    showToast('Processing deposit...', 'info');
+
+    setTimeout(async function() {
+        try {
+            var plans = getSosoPlans();
+            var matchedPlan = plans.find(function(p) { return p.priceNGN === selectedDepositAmount; });
+            if (!matchedPlan) {
+                matchedPlan = plans.reduce(function(prev, curr) {
+                    return Math.abs(curr.priceNGN - selectedDepositAmount) < Math.abs(prev.priceNGN - selectedDepositAmount) ? curr : prev;
+                });
+            }
+
+            var data = await apiCall('/deposit', 'POST', {
+                amount: selectedDepositAmount,
+                method: method === 'bank' ? 'Bank Transfer' : 'USDT TRC20',
+                planLevel: matchedPlan.level
+            });
+
+            currentUser.balance = data.newBalance;
+            currentUser.totalInvested += selectedDepositAmount;
+
+            updateDashboard();
+
+            document.getElementById('depositSuccessAmount').textContent = formatLocal(selectedDepositAmount) + ' (' + formatUSD(selectedDepositAmount) + ')';
+            document.getElementById('depositSuccess').style.display = 'block';
+            showToast('Deposit successful!', 'success');
+        } catch (error) {
+            showToast(error.message || 'Deposit failed', 'error');
+            resetDepositPage();
+        }
+    }, 5000);
+}
+
+// ==================== WITHDRAW ====================
+function resetWithdrawPage() {
+    document.getElementById('withdrawStep1').style.display = 'block';
+    document.getElementById('withdrawBankStep').style.display = 'none';
+    document.getElementById('withdrawUsdtStep').style.display = 'none';
+    document.getElementById('withdrawSuccess').style.display = 'none';
+    selectedWithdrawAmount = 0;
+    if (currentUser) { document.getElementById('withdrawAvailBalance').textContent = formatLocal(currentUser.balance); }
+}
+
+function backToWithdrawMethods() { resetWithdrawPage(); }
+
+function showWithdrawMethod(method) {
+    document.getElementById('withdrawStep1').style.display = 'none';
+    if (method === 'bank') {
+        document.getElementById('withdrawBankStep').style.display = 'block';
+        renderWithdrawBankAmounts();
+        setupWithdrawBankLookup();
+    } else {
+        document.getElementById('withdrawUsdtStep').style.display = 'block';
+        document.getElementById('withdrawUsdtAmount').oninput = function() {
+            var val = parseFloat(this.value) || 0;
+            document.getElementById('usdtToLocalWithdraw').textContent = '≈ ' + formatLocal(ngnFromUsd(val));
+        };
+    }
+}
+
+function renderWithdrawBankAmounts() {
+    var grid = document.getElementById('withdrawBankAmounts');
+    grid.innerHTML = '';
+    var amounts = [1000, 2000];
+    getSosoPlans().forEach(function(p) { if (amounts.indexOf(p.priceNGN) === -1) amounts.push(p.priceNGN); });
+    amounts.forEach(function(amt) {
+        var opt = document.createElement('div');
+        opt.className = 'amount-option';
+        opt.innerHTML = '<div class="amount-local">' + formatLocal(amt) + '</div><div class="amount-usd">' + formatUSD(amt) + '</div>';
+        opt.onclick = function() {
+            document.querySelectorAll('#withdrawBankAmounts .amount-option').forEach(function(a) { a.classList.remove('selected'); });
+            this.classList.add('selected');
+            selectedWithdrawAmount = amt;
+        };
+        grid.appendChild(opt);
+    });
+}
+
+function setupWithdrawBankLookup() {
+    var acctInput = document.getElementById('withdrawAcctNum');
+    var bankSelect = document.getElementById('withdrawBankName');
+    async function lookupAccount() {
+        var acct = acctInput.value.trim();
+        var bank = bankSelect.value;
+        if (acct.length === 10 && bank) {
+            try {
+                var data = await apiCall('/lookup-account', 'POST', { bankName: bank, accountNumber: acct });
+                document.getElementById('withdrawAcctName').value = data.accountName || '';
+            } catch(e) { document.getElementById('withdrawAcctName').value = ''; }
+        }
+    }
+    acctInput.addEventListener('input', lookupAccount);
+    bankSelect.addEventListener('change', lookupAccount);
+}
+
+async function processWithdrawal(method) {
+    var amount = 0;
+    var bankDetails = null;
+    var walletAddress = null;
+
+    if (method === 'bank') {
+        var bank = document.getElementById('withdrawBankName').value;
+        var acct = document.getElementById('withdrawAcctNum').value;
+        var name = document.getElementById('withdrawAcctName').value;
+        if (!bank || !acct || !name) { showToast('Please fill all bank details', 'error'); return; }
+        if (acct.length !== 10) { showToast('Account number must be 10 digits', 'error'); return; }
+        if (!selectedWithdrawAmount) { showToast('Please select withdrawal amount', 'error'); return; }
+        if (selectedWithdrawAmount < MIN_WITHDRAW_NGN) { showToast('Minimum withdrawal is ' + formatLocal(MIN_WITHDRAW_NGN), 'error'); return; }
+        amount = selectedWithdrawAmount;
+        bankDetails = { bank: bank, accountNumber: acct, accountName: name };
+    } else {
+        var wallet = document.getElementById('withdrawWalletAddr').value.trim();
+        var usdtAmt = parseFloat(document.getElementById('withdrawUsdtAmount').value);
+        if (!wallet) { showToast('Please enter wallet address', 'error'); return; }
+        if (!usdtAmt || usdtAmt < MIN_WITHDRAW_USDT) { showToast('Minimum USDT withdrawal is $' + MIN_WITHDRAW_USDT, 'error'); return; }
+        amount = ngnFromUsd(usdtAmt);
+        walletAddress = wallet;
+    }
+
+    if (amount > currentUser.balance) { showToast('Insufficient balance', 'error'); return; }
+
+    showToast('Processing withdrawal...', 'info');
+    document.getElementById('withdrawBankStep').style.display = 'none';
+    document.getElementById('withdrawUsdtStep').style.display = 'none';
+
+    setTimeout(async function() {
+        try {
+            var data = await apiCall('/withdraw', 'POST', { amount: amount, method: method, bankDetails: bankDetails, walletAddress: walletAddress });
+            currentUser.balance = data.newBalance;
+            currentUser.totalWithdrawn += amount;
+            updateDashboard();
+            document.getElementById('withdrawSuccessDetails').innerHTML = 'Amount: <strong style="color:var(--success);">' + formatLocal(amount) + '</strong> (' + formatUSD(amount) + ')';
+            document.getElementById('withdrawSuccess').style.display = 'block';
+            showToast('Withdrawal successful!', 'success');
+        } catch (error) {
+            showToast(error.message || 'Withdrawal failed', 'error');
+            resetWithdrawPage();
+        }
+    }, 4000);
+}
+
+// ==================== INVESTMENTS ====================
+function renderActiveInvestments() {
+    if (!currentUser) return;
+    var container = document.getElementById('activeInvestments');
+    if (!currentUser.investments || currentUser.investments.length === 0) {
+        container.innerHTML = '<div class="no-investments-msg"><i class="fas fa-box-open" style="font-size:40px;opacity:0.3;display:block;margin-bottom:10px;"></i><p>No active investments yet. Buy a SoSo plan from the Home tab!</p></div>';
+        return;
+    }
+    container.innerHTML = '';
+    clearInvestmentTimers();
+
+    currentUser.investments.forEach(function(inv) {
+        var card = document.createElement('div');
+        card.className = 'investment-card';
+        var timerId = 'timer_' + inv.id;
+        card.innerHTML =
+            '<div class="investment-header"><span class="investment-name">' + inv.name + '</span><span class="investment-status active">Active</span></div>' +
+            '<div class="investment-details">' +
+            '<div class="invest-detail-item"><div class="detail-label">Invested</div><div class="detail-value">' + formatLocal(inv.priceNGN) + '</div></div>' +
+            '<div class="invest-detail-item"><div class="detail-label">USD Value</div><div class="detail-value">' + formatUSD(inv.priceNGN) + '</div></div>' +
+            '<div class="invest-detail-item"><div class="detail-label">Daily Rate</div><div class="detail-value" style="color:var(--success);">' + inv.dailyRate + '</div></div>' +
+            '<div class="invest-detail-item"><div class="detail-label">Daily Income</div><div class="detail-value" style="color:var(--success);">' + formatLocal(inv.dailyIncome) + '</div></div>' +
+            '<div class="invest-detail-item"><div class="detail-label">SoSo Tokens</div><div class="detail-value">' + (inv.sosoTokens || 0).toFixed(0) + '</div></div>' +
+            '<div class="invest-detail-item"><div class="detail-label">Total Yield</div><div class="detail-value" style="color:var(--gold);">' + formatLocal(inv.totalYield || 0) + '</div></div></div>' +
+            '<div class="countdown-timer"><div style="font-size:11px;color:var(--text-secondary);margin-bottom:3px;">Running Since Purchase</div><div class="timer-digits" id="' + timerId + '">00:00:00:00</div></div>';
+        container.appendChild(card);
+
+        var purchaseDate = new Date(inv.purchaseDate);
+        var timerInterval = setInterval(function() {
+            var now = new Date();
+            var diff = now - purchaseDate;
+            var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            var secs = Math.floor((diff % (1000 * 60)) / 1000);
+            var el = document.getElementById(timerId);
+            if (el) el.textContent = String(days).padStart(2,'0') + 'd ' + String(hours).padStart(2,'0') + 'h ' + String(mins).padStart(2,'0') + 'm ' + String(secs).padStart(2,'0') + 's';
+        }, 1000);
+        investmentTimers.push(timerInterval);
+    });
+}
+
+function clearInvestmentTimers() {
+    investmentTimers.forEach(function(t) { clearInterval(t); });
+    investmentTimers = [];
+}
+
+function renderMyInvest() {
+    var container = document.getElementById('myInvestContent');
+    if (!currentUser || !currentUser.investments || currentUser.investments.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-chart-pie"></i><p>No investments yet</p></div><div style="margin-top:20px;"><h3 style="font-size:16px;margin-bottom:15px;">Available Plans</h3><div id="myInvestPlansList"></div></div>';
+        renderMyInvestPlans();
+        return;
+    }
+
+    var html = '<div class="section-title"><i class="fas fa-chart-pie"></i> Active Investments</div>';
+    currentUser.investments.forEach(function(inv) {
+        html += '<div class="investment-card"><div class="investment-header"><span class="investment-name">' + inv.name + '</span><span class="investment-status active">Active</span></div>' +
+            '<div class="investment-details">' +
+            '<div class="invest-detail-item"><div class="detail-label">Price</div><div class="detail-value">' + formatLocal(inv.priceNGN) + ' / ' + formatUSD(inv.priceNGN) + '</div></div>' +
+            '<div class="invest-detail-item"><div class="detail-label">Daily Rate</div><div class="detail-value" style="color:var(--success);">' + inv.dailyRate + '</div></div>' +
+            '<div class="invest-detail-item"><div class="detail-label">Daily Income</div><div class="detail-value" style="color:var(--success);">' + formatLocal(inv.dailyIncome) + ' / ' + formatUSD(inv.dailyIncome) + '</div></div>' +
+            '<div class="invest-detail-item"><div class="detail-label">SoSo Tokens</div><div class="detail-value">' + (inv.sosoTokens || 0).toFixed(0) + '</div></div>' +
+            '<div class="invest-detail-item"><div class="detail-label">Purchased</div><div class="detail-value">' + new Date(inv.purchaseDate).toLocaleDateString() + '</div></div>' +
+            '<div class="invest-detail-item"><div class="detail-label">Total Yield</div><div class="detail-value" style="color:var(--gold);">' + formatLocal(inv.totalYield || 0) + '</div></div></div></div>';
+    });
+    html += '<div style="background:var(--dark2);border-radius:14px;padding:15px;margin-top:15px;border:1px solid rgba(108,92,231,0.15);"><p style="font-size:13px;color:var(--text-secondary);text-align:center;"><i class="fas fa-info-circle" style="color:var(--primary-light)"></i> Want more? You can buy <strong style="color:var(--text);">multiple plans</strong> using the same account!</p></div>';
+    html += '<div style="margin-top:20px;"><h3 style="font-size:16px;margin-bottom:15px;">All Available Plans</h3><div id="myInvestPlansList"></div></div>';
+    container.innerHTML = html;
+    renderMyInvestPlans();
+}
+
+function renderMyInvestPlans() {
+    var container = document.getElementById('myInvestPlansList');
+    if (!container) return;
+    var html = '';
+    getSosoPlans().forEach(function(plan) {
+        html += '<div style="background:var(--dark2);border-radius:14px;padding:15px;margin-bottom:10px;border:1px solid rgba(108,92,231,0.1);display:flex;justify-content:space-between;align-items:center;">' +
+            '<div><div style="font-weight:700;color:var(--primary-light);font-size:15px;">' + plan.name + '</div>' +
+            '<div style="font-size:13px;color:var(--text-secondary);">' + formatLocal(plan.priceNGN) + ' / $' + plan.priceUSD + '</div>' +
+            '<div style="font-size:11px;color:var(--success);">Daily: ' + formatLocal(plan.dailyIncome) + ' | ' + plan.dailyRate + '</div></div>' +
+            '<button class="plan-buy-btn" onclick="buyPlan(' + plan.level + ')" style="width:auto;padding:8px 15px;">Buy</button></div>';
+    });
+    container.innerHTML = html;
+}
+
+// ==================== HISTORY ====================
+async function loadTransactions(filter) {
+    try {
+        var data = await apiCall('/transactions?type=' + filter);
+        userTransactions = data.transactions || [];
+        renderHistory(filter);
+    } catch(e) { renderHistory(filter); }
+}
+
+function renderHistory(filter) {
+    var container = document.getElementById('historyList');
+    var transactions = userTransactions;
+    if (filter && filter !== 'all') {
+        transactions = transactions.filter(function(t) { return t.type === filter; });
+    }
+    if (!transactions || transactions.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-receipt"></i><p>No ' + (filter === 'all' ? '' : filter) + ' transactions found</p></div>';
+        return;
+    }
+    var html = '';
+    transactions.forEach(function(t) {
+        var isPositive = t.type === 'deposit' || t.type === 'yield' || t.type === 'bonus';
+        var isPurchase = t.type === 'purchase';
+        var iconMap = { deposit: 'fa-arrow-down', withdrawal: 'fa-arrow-up', yield: 'fa-chart-line', bonus: 'fa-gift', purchase: 'fa-shopping-cart' };
+        var bgMap = { deposit: 'rgba(0,184,148,0.15)', withdrawal: 'rgba(255,107,107,0.15)', yield: 'rgba(253,203,110,0.15)', bonus: 'rgba(108,92,231,0.15)', purchase: 'rgba(0,206,201,0.15)' };
+        var colorMap = { deposit: 'var(--success)', withdrawal: 'var(--danger)', yield: 'var(--gold)', bonus: 'var(--primary-light)', purchase: 'var(--secondary)' };
+        var icon = iconMap[t.type] || 'fa-exchange-alt';
+        var iconBg = bgMap[t.type] || 'rgba(108,92,231,0.15)';
+        var iconColor = colorMap[t.type] || 'var(--primary-light)';
+
+        html +=
+            '<div class="history-item"><div class="history-icon" style="background:' + iconBg + ';color:' + iconColor + ';"><i class="fas ' + icon + '"></i></div>' +
+            '<div class="history-info"><div class="history-type">' + t.description + '</div><div class="history-date">' + new Date(t.date).toLocaleString() + '</div></div>' +
+            '<div class="history-amount ' + (isPurchase ? 'negative' : (isPositive ? 'positive' : 'negative')) + '">' +
+            (isPurchase ? '-' : (isPositive ? '+' : '-')) + formatLocal(t.amount) +
+            '<span class="usd-small">' + formatUSD(t.amount) + '</span></div></div>';
+    });
+    container.innerHTML = html;
+}
+
+function filterHistory(filter, el) {
+    document.querySelectorAll('.history-tab').forEach(function(t) { t.classList.remove('active'); });
+    if (el) el.classList.add('active');
+    loadTransactions(filter);
+}
+
+// ==================== BIND BANK ====================
+function loadBoundInfo() {
+    if (currentUser.boundBank) {
+        document.getElementById('boundBankInfo').style.display = 'block';
+        document.getElementById('boundBankName').textContent = currentUser.boundBank.bankName;
+        document.getElementById('boundAcctNum').textContent = currentUser.boundBank.accountNumber;
+        document.getElementById('boundAcctName').textContent = currentUser.boundBank.accountName;
+        document.getElementById('bindBankSelect').value = currentUser.boundBank.bankName;
+        document.getElementById('bindAcctNumber').value = currentUser.boundBank.accountNumber;
+        document.getElementById('bindAcctName').value = currentUser.boundBank.accountName;
+    }
+    if (currentUser.boundWallet) {
+        document.getElementById('boundWalletInfo').style.display = 'block';
+        document.getElementById('boundWalletAddr').textContent = currentUser.boundWallet;
+        document.getElementById('bindWalletAddress').value = currentUser.boundWallet;
+    }
+    setupBindBankLookup();
+}
+
+function setupBindBankLookup() {
+    var acctInput = document.getElementById('bindAcctNumber');
+    var bankSelect = document.getElementById('bindBankSelect');
+    async function lookupBind() {
+        var acct = acctInput.value.trim();
+        var bank = bankSelect.value;
+        if (acct.length === 10 && bank) {
+            try {
+                var data = await apiCall('/lookup-account', 'POST', { bankName: bank, accountNumber: acct });
+                document.getElementById('bindAcctName').value = data.accountName || '';
+            } catch(e) { document.getElementById('bindAcctName').value = ''; }
+        } else { document.getElementById('bindAcctName').value = ''; }
+    }
+    acctInput.addEventListener('input', lookupBind);
+    bankSelect.addEventListener('change', lookupBind);
+}
+
+async function saveBindBank() {
+    var bank = document.getElementById('bindBankSelect').value;
+    var acct = document.getElementById('bindAcctNumber').value.trim();
+    var name = document.getElementById('bindAcctName').value.trim();
+    if (!bank || !acct || !name) { showToast('Please fill all bank details', 'error'); return; }
+    if (acct.length !== 10) { showToast('Account number must be 10 digits', 'error'); return; }
+    try {
+        await apiCall('/bind-bank', 'POST', { bankName: bank, accountNumber: acct, accountName: name });
+        currentUser.boundBank = { bankName: bank, accountNumber: acct, accountName: name };
+        document.getElementById('boundBankInfo').style.display = 'block';
+        document.getElementById('boundBankName').textContent = bank;
+        document.getElementById('boundAcctNum').textContent = acct;
+        document.getElementById('boundAcctName').textContent = name;
+        showToast('Bank details saved successfully!', 'success');
+    } catch(error) { showToast(error.message || 'Failed to save bank details', 'error'); }
+}
+
+async function saveBindWallet() {
+    var addr = document.getElementById('bindWalletAddress').value.trim();
+    if (!addr) { showToast('Please enter wallet address', 'error'); return; }
+    try {
+        await apiCall('/bind-wallet', 'POST', { walletAddress: addr });
+        currentUser.boundWallet = addr;
+        document.getElementById('boundWalletInfo').style.display = 'block';
+        document.getElementById('boundWalletAddr').textContent = addr;
+        showToast('Wallet address saved successfully!', 'success');
+    } catch(error) { showToast(error.message || 'Failed to save wallet', 'error'); }
+}
+
+// ==================== COPY ====================
+function copyText(text) {
+    navigator.clipboard.writeText(text).then(function() { showToast('Copied!', 'success'); }).catch(function() {
+        var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('Copied!', 'success');
+    });
+}
+function copyReferral() { copyText(currentUser.referralCode); }
+function copyShareLink() { copyText(window.location.origin + '?ref=' + currentUser.referralCode); }
+function selectChain(el, chain) { document.querySelectorAll('.chain-option').forEach(function(c) { c.classList.remove('selected'); }); el.classList.add('selected'); }
+
+// ==================== INIT ====================
+async function init() {
+    await detectCurrency();
+    var urlParams = new URLSearchParams(window.location.search);
+    var refCode = urlParams.get('ref');
+    if (refCode) { var signupRef = document.getElementById('signupReferral'); if (signupRef) signupRef.value = refCode; }
+    var loggedIn = await tryAutoLogin();
+    setTimeout(function() {
+        document.getElementById('loadingScreen').classList.add('hide');
+        if (loggedIn) { enterApp(); } else { showPage('loginPage'); }
+    }, 1500);
+}
+
+init();
+</script>
+</body>
+</html>
